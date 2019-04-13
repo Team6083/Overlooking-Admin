@@ -1,6 +1,7 @@
 package com.github.team6083.overlookingAdmin.web;
 
 import com.github.team6083.overlookingAdmin.OverAdminServer;
+import com.github.team6083.overlookingAdmin.web.hook.HookHandler;
 import fi.iki.elonen.NanoHTTPD;
 import org.apache.commons.io.IOUtils;
 
@@ -14,11 +15,13 @@ public class WebServer extends NanoHTTPD {
     private boolean detail;
     private static final int authFailTime = 2;
     private Map<String, Integer> authFailCount = new HashMap<String, Integer>();
+    private HookHandler hookHandler;
 
     public WebServer(int port) throws IOException {
         super(port);
         quiet = false;
         detail = false;
+        hookHandler = new HookHandler();
 
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
     }
@@ -51,17 +54,24 @@ public class WebServer extends NanoHTTPD {
             }
         }
 
+        if (uri.contains("/hook/")) {
+            try {
+                return hookHandler.handle(session);
+            } catch (IOException | ResponseException ex) {
+                ex.printStackTrace();
+            }
+        }
+
         if (uri.equals("/")) {
             // index
             uri = "/index.html";
-        }
-        else if(uri.contains("/errHtml/")){
+        } else if (uri.contains("/errHtml/")) {
             // 403
             return Template.getForbiddenResponse();
         }
         // serve special uri
 
-        if(!session.getMethod().equals(Method.GET)){
+        if (!session.getMethod().equals(Method.GET)) {
             return Template.getMethodNotAllowedResponse();
         }
         // 405 Method Not Allowed

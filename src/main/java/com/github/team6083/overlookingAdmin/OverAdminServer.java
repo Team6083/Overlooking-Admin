@@ -16,15 +16,5 @@ public class OverAdminServer {
         while (true){
 
         }
-
-        // Start listing users from the beginning, 1000 at a time.
-
-//        ListUsersPage page = FirebaseAuth.getInstance().listUsers(null);
-//        while (page != null) {
-//            for (ExportedUserRecord user : page.getValues()) {
-//                System.out.println("User: " + user.getUid());
-//            }
-//            page = page.getNextPage();
-//        }
     }
 }

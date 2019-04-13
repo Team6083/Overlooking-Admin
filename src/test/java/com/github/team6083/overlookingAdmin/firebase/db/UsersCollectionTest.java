@@ -1,16 +1,12 @@
 package com.github.team6083.overlookingAdmin.firebase.db;
 
-import com.github.team6083.overlookingAdmin.firebase.Auth;
 import com.github.team6083.overlookingAdmin.firebase.CloudFirestore;
 import com.github.team6083.overlookingAdmin.firebase.FirebaseMain;
 import com.github.team6083.overlookingAdmin.firebase.ServiceAcc;
 import com.github.team6083.overlookingAdmin.module.ClassData;
 import com.github.team6083.overlookingAdmin.module.User;
-import com.google.cloud.firestore.CollectionReference;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -43,9 +39,9 @@ class UsersCollectionTest extends CloudFirestore {
         user.birthDay = new Date();
         user.firebaseRecord = null;
 
-        UsersCollection.saveUserByUid(user, "testpass");
+        UsersCollection.saveUser(user, "testpass");
 
-        User u = UsersCollection.getUserFromRef(UsersCollection.getUserRefByEmail(user.email));
+        User u = UsersCollection.getUser(UsersCollection.getUserRefByEmail(user.email));
 
         assertEquals(user.email, u.email);
         assertEquals(user.firstYear, u.firstYear);
