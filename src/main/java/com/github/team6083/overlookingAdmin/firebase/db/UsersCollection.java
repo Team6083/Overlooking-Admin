@@ -15,7 +15,6 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import org.json.JSONObject;
 
-import javax.print.Doc;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class UsersCollection extends CloudFirestore {
         JSONObject jsonObject = new JSONObject(data);
         jsonObject.put("birthDay", d);
 
-        User user = User.decodeJSON(jsonObject);
+        User user = User.decodeJSON(jsonObject, userRecord);
         if (userRecord == null) {
             userRecord = Auth.getUserByEmail(user.email);
         }

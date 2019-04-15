@@ -4,6 +4,7 @@ import com.github.team6083.overlookingAdmin.firebase.Auth;
 import com.github.team6083.overlookingAdmin.firebase.db.UsersCollection;
 import com.github.team6083.overlookingAdmin.module.User;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
+import com.github.team6083.overlookingAdmin.web.hook.worker.AppsWorker;
 import com.github.team6083.overlookingAdmin.web.hook.worker.OAuthWorker;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
@@ -26,6 +27,8 @@ public class HookHandler {
         // route handlers
         if (uri.contains("/OAuth/")) {
             worker = new OAuthWorker();
+        } else if(uri.contains("/Apps/")){
+            worker = new AppsWorker();
         }
 
         if (worker != null) {

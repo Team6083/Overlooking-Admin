@@ -1,12 +1,9 @@
 package com.github.team6083.overlookingAdmin.module;
 
 import com.github.team6083.overlookingAdmin.util.UserPermission;
-import com.google.cloud.Timestamp;
 import com.google.firebase.auth.UserRecord;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Date;
 
 public class User {
