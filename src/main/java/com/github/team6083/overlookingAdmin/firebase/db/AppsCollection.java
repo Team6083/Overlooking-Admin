@@ -20,7 +20,7 @@ public class AppsCollection extends CloudFirestore {
     }
 
     public static List<App> getAllApps() throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> querySnapshotApiFuture = getCollection().orderBy("name").get();
+        ApiFuture<QuerySnapshot> querySnapshotApiFuture = getCollection().get();
 
         List<QueryDocumentSnapshot> documentSnapshots = querySnapshotApiFuture.get().getDocuments();
 

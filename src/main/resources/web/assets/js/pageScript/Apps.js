@@ -16,7 +16,7 @@ firebase.auth().onAuthStateChanged(function (user) {
 const appsTable = $("#usersTable").DataTable();
 
 appsListReq.onload = () => {
-    const response = JSON.parse(usersListReq.response);
+    const response = JSON.parse(appsListReq.response);
     console.log(response);
 
     for(let i=0;i<response.length;i++){
