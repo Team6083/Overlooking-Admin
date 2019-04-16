@@ -62,6 +62,11 @@
 <div id="authWarnPanelContainer"></div>
 <script>
     $("#authWarnPanelContainer").load("/template/authWarningPanel.html");
+    setTimeout(()=>{
+        if(!firebase.auth().currentUser){
+            showAuthWarn();
+        }
+    }, 5000);
 </script>
 
 <script src="assets/js/pageScript/OAuth.js"></script>
