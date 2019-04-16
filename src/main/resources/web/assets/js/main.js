@@ -34,3 +34,11 @@ function signOut() {
         console.error(error);
     });
 }
+
+const authWarnFunc = ()=>{
+    if(!firebase.auth().currentUser){
+        showAuthWarn();
+    }
+};
+
+const authWarnTimeout = 3000;
