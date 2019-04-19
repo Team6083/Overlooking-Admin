@@ -1,10 +1,12 @@
 package com.github.team6083.overlookingAdmin.module;
 
+import com.github.team6083.overlookingAdmin.firebase.db.MemberProfileCollection;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
 import com.google.firebase.auth.UserRecord;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 public class User {
     public UserRecord firebaseRecord;
@@ -17,15 +19,25 @@ public class User {
     public Date birthDay;
     public UserPermission permission;
     public String position;
+    public String memberProfileRef;
 
-    public User(){
+    public User() {
         permission = UserPermission.NONE;
     }
 
-    public JSONObject encodeJSON(){
+    public MemberProfile getProfile() throws ExecutionException, InterruptedException {
+        if (!memberProfileRef.equals("")) {
+            return MemberProfileCollection.getProfile(memberProfileRef);
+        } else {
+            return null;
+        }
+    }
+
+    public JSONObject encodeJSON() {
         return encodeJSON(this);
     }
-    public JSONObject encodeJSON(boolean includeFirebaseRecord){
+
+    public JSONObject encodeJSON(boolean includeFirebaseRecord) {
         return encodeJSON(this, includeFirebaseRecord);
     }
 
@@ -40,13 +52,14 @@ public class User {
         json.put("classDataString", user.classData.encodeJSON().toString());
         json.put("permission", user.permission.ordinal());
         json.put("position", user.permission);
+        json.put("memberProfileRef", user.memberProfileRef);
         return json;
     }
 
-    public static JSONObject encodeJSON(User user, boolean includeFirebaseRecord){
+    public static JSONObject encodeJSON(User user, boolean includeFirebaseRecord) {
         JSONObject jsonObject = encodeJSON(user);
 
-        if(includeFirebaseRecord){
+        if (includeFirebaseRecord) {
             jsonObject.put("uid", user.firebaseRecord.getUid());
             jsonObject.put("photoUrl", user.firebaseRecord.getPhotoUrl());
             jsonObject.put("disabled", user.firebaseRecord.isDisabled());
@@ -71,7 +84,7 @@ public class User {
     public static User decodeJSON(JSONObject json, UserRecord userRecord) {
         User user = new User();
         user.birthDay = (Date) json.get("birthDay");
-        user.classData = ClassData.decodeJson(json.getString("classDataString"));
+        user.classData = ClassData.decodeJSON(json.getString("classDataString"));
         user.email = json.getString("email");
         user.firstYear = json.getInt("firstYear");
         user.name = json.getString("name");
@@ -80,15 +93,17 @@ public class User {
         user.permission = UserPermission.convert(json.getInt("permission"));
         user.firebaseRecord = userRecord;
         user.position = json.getString("position");
+        user.memberProfileRef = json.getString("memberProfileRef");
+
         return user;
     }
 
-    public boolean checkPermission(UserPermission permission){
+    public boolean checkPermission(UserPermission permission) {
         return checkPermission(permission, this);
     }
 
-    public static boolean checkPermission(UserPermission permission, User user){
-        if(user.permission.ordinal() >= permission.ordinal()){
+    public static boolean checkPermission(UserPermission permission, User user) {
+        if (user.permission.ordinal() >= permission.ordinal()) {
             return true;
         } else {
             return false;

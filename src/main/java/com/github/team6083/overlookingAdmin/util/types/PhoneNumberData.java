@@ -13,6 +13,10 @@ public class PhoneNumberData {
         phoneNumber = new PhoneNumber().setCountryCode(countryCode).setNationalNumber(number);
     }
 
+    public PhoneNumberData(String number) {
+        phoneNumber = new PhoneNumber().setRawInput(number);
+    }
+
     public String getRegionCallingNumber(String region) {
         return phoneUtil.formatOutOfCountryCallingNumber(this.phoneNumber, region);
     }
@@ -39,5 +43,10 @@ public class PhoneNumberData {
 
     public static String getNumber(PhoneNumber phoneNumber, PhoneNumberUtil.PhoneNumberFormat format) {
         return phoneUtil.format(phoneNumber, format);
+    }
+
+    @Override
+    public String toString() {
+        return getNumber();
     }
 }

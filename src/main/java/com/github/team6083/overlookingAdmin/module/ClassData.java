@@ -19,7 +19,7 @@ public class ClassData {
         return json;
     }
 
-    public static ClassData decodeJson(String jsonString) {
+    public static ClassData decodeJSON(String jsonString) {
         return decodeJSON(new JSONObject(jsonString));
     }
 
