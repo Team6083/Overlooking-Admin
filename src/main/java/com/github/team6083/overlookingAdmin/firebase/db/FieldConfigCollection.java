@@ -2,9 +2,11 @@ package com.github.team6083.overlookingAdmin.firebase.db;
 
 import com.github.team6083.overlookingAdmin.firebase.CloudFirestore;
 import com.github.team6083.overlookingAdmin.module.FieldConfig;
+import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.WriteResult;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -33,6 +35,17 @@ public class FieldConfigCollection extends CloudFirestore {
         FieldConfig config = FieldConfig.decodeJSON(jsonObject, reference);
 
         return config;
+    }
+
+    public static DocumentReference saveConfig(FieldConfig fieldConfig) throws ExecutionException, InterruptedException {
+        if (fieldConfig.documentReference == null) {
+            ApiFuture<DocumentReference> future = getCollection().add(fieldConfig.encodeJSON().toMap());
+            return future.get();
+        } else {
+            ApiFuture<WriteResult> future = fieldConfig.documentReference.set(fieldConfig.encodeJSON().toMap());
+            System.out.println("Update time : " + future.get().getUpdateTime());
+            return fieldConfig.documentReference;
+        }
     }
 
 }

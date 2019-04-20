@@ -10,7 +10,7 @@ import java.util.List;
 public class App {
     public String name;
     public String app_token;
-    public DocumentReference app_Doc;
+    public DocumentReference documentReference;
 
     public JSONObject encodeJSON(){
         return encodeJSON(this);
@@ -29,8 +29,8 @@ public class App {
         jsonObject.put("name", app.name);
         jsonObject.put("app_token", app.app_token);
         if(includeDoc){
-            if(app.app_Doc != null){
-                jsonObject.put("docId", app.app_Doc.getId());
+            if(app.documentReference != null){
+                jsonObject.put("docId", app.documentReference.getId());
             } else{
                 jsonObject.put("docId", "undefined");
             }
@@ -57,7 +57,7 @@ public class App {
         App app = new App();
         app.name = jsonObject.getString("name");
         app.app_token = jsonObject.getString("app_token");
-        app.app_Doc = documentReference;
+        app.documentReference = documentReference;
         return app;
     }
 }

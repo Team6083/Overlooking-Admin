@@ -49,7 +49,7 @@ public class User {
         json.put("phoneNumber", user.phoneNumber);
         json.put("firstYear", user.firstYear);
         json.put("birthDay", user.birthDay);
-        json.put("classDataString", user.classData.encodeJSON().toString());
+        json.put("classData", user.classData.encodeJSON());
         json.put("permission", user.permission.ordinal());
         json.put("position", user.permission);
         json.put("memberProfileRef", user.memberProfileRef);
@@ -84,7 +84,7 @@ public class User {
     public static User decodeJSON(JSONObject json, UserRecord userRecord) {
         User user = new User();
         user.birthDay = (Date) json.get("birthDay");
-        user.classData = ClassData.decodeJSON(json.getString("classDataString"));
+        user.classData = ClassData.decodeJSON(json.getJSONObject("classData"));
         user.email = json.getString("email");
         user.firstYear = json.getInt("firstYear");
         user.name = json.getString("name");

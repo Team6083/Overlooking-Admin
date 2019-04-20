@@ -4,7 +4,6 @@ import com.github.team6083.overlookingAdmin.firebase.CloudFirestore;
 import com.github.team6083.overlookingAdmin.module.App;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -59,10 +58,10 @@ public class AppsCollection extends CloudFirestore {
     }
 
     public static void saveApp(App app) throws ExecutionException, InterruptedException {
-        if (app.app_Doc == null) {
+        if (app.documentReference == null) {
             getCollection().add(app.encodeJSON().toMap());
         } else{
-            ApiFuture<WriteResult> future = app.app_Doc.set(app.encodeJSON().toMap());
+            ApiFuture<WriteResult> future = app.documentReference.set(app.encodeJSON().toMap());
             System.out.println("Update time : " + future.get().getUpdateTime());
         }
     }

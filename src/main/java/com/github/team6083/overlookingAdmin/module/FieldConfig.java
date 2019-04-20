@@ -3,12 +3,13 @@ package com.github.team6083.overlookingAdmin.module;
 import com.google.cloud.firestore.DocumentReference;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class FieldConfig {
 
-    enum DataTypes {
+    public enum DataTypes {
         Int,
         Number,
         String,
@@ -20,9 +21,13 @@ public class FieldConfig {
         ClassData
     }
 
-    private String configName;
+    public String configName;
     private Map<String, DataTypes> fields;
-    public DocumentReference docRef;
+    public DocumentReference documentReference;
+
+    public FieldConfig(){
+        fields = new HashMap<>();
+    }
 
     public void addField(String name, DataTypes type) {
         fields.put(name, type);
@@ -36,11 +41,6 @@ public class FieldConfig {
         return fields;
     }
 
-    public String getName() {
-        return configName;
-    }
-
-
     public DataTypes getType(String name) {
         return fields.get(name);
     }
@@ -49,23 +49,37 @@ public class FieldConfig {
         return fields.containsKey(name);
     }
 
+    public JSONObject encodeJSON(){
+        return encodeJSON(this);
+    }
+
     public static JSONObject encodeJSON(FieldConfig fieldConfig) {
-        JSONObject jsonObject = new JSONObject(fieldConfig.fields);
+        JSONObject jsonObject = new JSONObject();
 
-        jsonObject.put("config_name", fieldConfig.configName);
+        for(String name: fieldConfig.fields.keySet()) {
+            DataTypes dataTypes = fieldConfig.fields.get(name);
 
-        return jsonObject;
+            jsonObject.put(name, dataTypes.name());
+        }
+
+        JSONObject out = new JSONObject();
+
+        out.put("config", jsonObject);
+        out.put("name", fieldConfig.configName);
+
+        return out;
     }
 
     public static FieldConfig decodeJSON(JSONObject jsonObject, DocumentReference docRef) {
         FieldConfig fieldConfig = new FieldConfig();
-        fieldConfig.docRef = docRef;
-        fieldConfig.configName = jsonObject.getString("config_name");
+        fieldConfig.documentReference = docRef;
+        fieldConfig.configName = jsonObject.getString("name");
 
-        Set<String> keySet = jsonObject.toMap().keySet();
+        JSONObject jsonData = jsonObject.getJSONObject("config");
+        Set<String> keySet = jsonData.toMap().keySet();
 
         for (String key : keySet) {
-            DataTypes type = fieldConfig.getType(jsonObject.getString(key));
+            DataTypes type = DataTypes.valueOf(jsonData.getString(key));
             fieldConfig.addField(key, type);
         }
 
