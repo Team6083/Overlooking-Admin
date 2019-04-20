@@ -1,20 +1,42 @@
 package com.github.team6083.overlookingAdmin.firebase.db;
 
 import com.github.team6083.overlookingAdmin.firebase.CloudFirestore;
+import com.github.team6083.overlookingAdmin.module.App;
 import com.github.team6083.overlookingAdmin.module.MemberProfile;
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.*;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class MemberProfileCollection extends CloudFirestore {
     public static CollectionReference getCollection() {
         return db.collection("member_profile");
+    }
+
+    public static List<MemberProfile> getAll() throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> querySnapshotApiFuture = getCollection().get();
+
+        List<QueryDocumentSnapshot> documentSnapshots = querySnapshotApiFuture.get().getDocuments();
+
+        Iterator it = documentSnapshots.iterator();
+
+        List<MemberProfile> list = new ArrayList<>();
+
+        while (it.hasNext()){
+            DocumentSnapshot documentSnapshot = (DocumentSnapshot) it.next();
+
+            JSONObject json = new JSONObject(documentSnapshot.getData());
+            MemberProfile memberProfile = MemberProfile.decodeJSON(json);
+
+            memberProfile.documentReference = documentSnapshot.getReference();
+            list.add(memberProfile);
+        }
+        return list;
     }
 
     public static MemberProfile getProfile(String uid) throws ExecutionException, InterruptedException {

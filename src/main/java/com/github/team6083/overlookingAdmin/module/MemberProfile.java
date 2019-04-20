@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class MemberProfile implements StorableModule {
-    public Map<String, Object> profileData;
+    private Map<String, Object> profileData;
     private FieldConfig fields;
     public DocumentReference documentReference;
 
