@@ -23,8 +23,8 @@ usersListReq.onload = () => {
         let u = response[i];
 
         let classData = "";
-        if(u.classDataString !== undefined){
-            let classDataJSON = JSON.parse(u.classDataString);
+        if(u.classData !== undefined){
+            let classDataJSON = u.classData;
             classData = classDataJSON.className + " #" + classDataJSON.number;
         }
 
