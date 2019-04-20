@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class MemberProfile {
+public class MemberProfile implements StorableModule {
     public Map<String, Object> profileData;
     private FieldConfig fields;
     public DocumentReference documentReference;
@@ -125,4 +125,13 @@ public class MemberProfile {
         return memberProfile;
     }
 
+    @Override
+    public DocumentReference getDocumentReference() {
+        return documentReference;
+    }
+
+    @Override
+    public Map getStorableMap() {
+        return encodeJSON().toMap();
+    }
 }

@@ -38,14 +38,7 @@ public class FieldConfigCollection extends CloudFirestore {
     }
 
     public static DocumentReference saveConfig(FieldConfig fieldConfig) throws ExecutionException, InterruptedException {
-        if (fieldConfig.documentReference == null) {
-            ApiFuture<DocumentReference> future = getCollection().add(fieldConfig.encodeJSON().toMap());
-            return future.get();
-        } else {
-            ApiFuture<WriteResult> future = fieldConfig.documentReference.set(fieldConfig.encodeJSON().toMap());
-            System.out.println("Update time : " + future.get().getUpdateTime());
-            return fieldConfig.documentReference;
-        }
+       return saveStorable(getCollection(), fieldConfig);
     }
 
 }

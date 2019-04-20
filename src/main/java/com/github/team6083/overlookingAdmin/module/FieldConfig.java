@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class FieldConfig {
+public class FieldConfig implements StorableModule {
 
     public enum DataTypes {
         Int,
@@ -84,5 +84,16 @@ public class FieldConfig {
         }
 
         return fieldConfig;
+    }
+
+
+    @Override
+    public DocumentReference getDocumentReference() {
+        return documentReference;
+    }
+
+    @Override
+    public Map getStorableMap() {
+        return encodeJSON().toMap();
     }
 }

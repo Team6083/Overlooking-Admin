@@ -48,14 +48,7 @@ public class MemberProfileCollection extends CloudFirestore {
             throw new Error("field config is empty");
         }
 
-        if (profile.documentReference == null) {
-            ApiFuture<DocumentReference> future = getCollection().add(profile.encodeJSON().toMap());
-            return future.get();
-        } else {
-            ApiFuture<WriteResult> future = profile.documentReference.set(profile.encodeJSON().toMap());
-            System.out.println("Update time : " + future.get().getUpdateTime());
-            return profile.documentReference;
-        }
+        return saveStorable(getCollection(), profile);
     }
 
 }
