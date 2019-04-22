@@ -31,6 +31,9 @@ public class MemberProfileCollection extends CloudFirestore {
             DocumentSnapshot documentSnapshot = (DocumentSnapshot) it.next();
 
             JSONObject json = new JSONObject(documentSnapshot.getData());
+            json.remove("config");
+            json.put("config", documentSnapshot.get("config"));
+
             MemberProfile memberProfile = MemberProfile.decodeJSON(json);
 
             memberProfile.documentReference = documentSnapshot.getReference();

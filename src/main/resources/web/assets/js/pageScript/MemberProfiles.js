@@ -19,10 +19,16 @@ profilesListReq.onload = () => {
     const response = JSON.parse(profilesListReq.response);
     console.log(response);
 
-    for(let i=0;i<response.length;i++){
+    for (let i = 0; i < response.length; i++) {
         let u = response[i];
 
-        usersTable.row.add([u.uid, u.configName, u.linkedAcc]).draw();
+        let linked = "";
+        for (let j = 0; j < u.linkedAcc.length; j++) {
+             linked += u.linkedAcc[j].email;
+             linked += " ";
+        }
+
+        usersTable.row.add([u.uid, u.configName,linked]).draw();
     }
 };
 
