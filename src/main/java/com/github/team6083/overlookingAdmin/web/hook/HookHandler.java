@@ -5,6 +5,7 @@ import com.github.team6083.overlookingAdmin.firebase.db.UsersCollection;
 import com.github.team6083.overlookingAdmin.module.User;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
 import com.github.team6083.overlookingAdmin.web.hook.worker.AppsWorker;
+import com.github.team6083.overlookingAdmin.web.hook.worker.FieldConfigWorker;
 import com.github.team6083.overlookingAdmin.web.hook.worker.MemberProfilesWorker;
 import com.github.team6083.overlookingAdmin.web.hook.worker.OAuthWorker;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -32,6 +33,8 @@ public class HookHandler {
             worker = new AppsWorker();
         } else if (uri.contains("/MemberProfiles/")) {
             worker = new MemberProfilesWorker();
+        } else if (uri.contains("/FieldConfig/")) {
+            worker = new FieldConfigWorker();
         }
 
         if (worker != null) {
