@@ -17,16 +17,18 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static fi.iki.elonen.NanoHTTPD.*;
+
 import fi.iki.elonen.NanoHTTPD.Response.*;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-public class OAuthWorker implements HookWorker {
+public class UsersWorker implements HookWorker {
     @Override
     public NanoHTTPD.Response serve(String uri, Map<String, String> header, String body, NanoHTTPD.Method method) {
         String idToken = HookHandler.getIdToken(header);
         NanoHTTPD.Response r = null;
 
-        if (uri.equals("/OAuth/usersList")) {
+        if (uri.equals("/users/usersList")) {
             try {
                 if (HookHandler.checkPermission(idToken, UserPermission.LEADER)) {
                     ListUsersPage page = Auth.getListUsersPage();
@@ -36,7 +38,7 @@ public class OAuthWorker implements HookWorker {
                         for (ExportedUserRecord userRecord : page.getValues()) {
                             User user = UsersCollection.getUser(userRecord);
                             JSONObject json;
-                            if(user != null){
+                            if (user != null) {
                                 json = user.encodeJSON(true);
                                 array.put(json);
                             }
@@ -54,6 +56,18 @@ public class OAuthWorker implements HookWorker {
             } catch (FirebaseAuthException e) {
                 e.printStackTrace();
             }
+        } else if (uri.equals("/users/addUser")) {
+            JSONObject jsonObject;
+            try {
+                jsonObject = new JSONObject(body);
+            } catch (JSONException e){
+                return badRequest("json invalid");
+            }
+
+            if (!jsonObject.has("email") || !jsonObject.has("psw")) {
+                return badRequest("email and psw is required");
+            }
+
         }
 
         return r;

@@ -1,6 +1,6 @@
 let usersListReq = new XMLHttpRequest();
 
-usersListReq.open("GET", "/hook/OAuth/usersList");
+usersListReq.open("GET", "/hook/users/usersList");
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
