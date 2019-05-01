@@ -62,6 +62,10 @@ public class WebServer extends NanoHTTPD {
             }
         }
 
+        if (uri.contains("/auth/")) {
+            //TODO add auth things
+        }
+
         if (uri.equals("/")) {
             // index
             uri = "/index.html";
