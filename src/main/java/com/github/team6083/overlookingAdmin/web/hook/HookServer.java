@@ -18,11 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class HookRouter {
+public class HookServer {
+
+    public static final String hookURL = "/hook";
+
     public NanoHTTPD.Response handle(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
-        NanoHTTPD.Response r = null;
+        NanoHTTPD.Response r;
         String uri = session.getUri();
-        uri = uri.substring(5);
+        uri = uri.substring(hookURL.length());
 
         HookHandler handler = null;
 

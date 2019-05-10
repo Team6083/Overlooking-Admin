@@ -2,10 +2,9 @@ package com.github.team6083.overlookingAdmin.web.hook.handler;
 
 import com.github.team6083.overlookingAdmin.firebase.db.MemberProfileCollection;
 import com.github.team6083.overlookingAdmin.firebase.db.UsersCollection;
-import com.github.team6083.overlookingAdmin.module.MemberProfile;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
 import com.github.team6083.overlookingAdmin.web.hook.HookHandler;
-import com.github.team6083.overlookingAdmin.web.hook.HookRouter;
+import com.github.team6083.overlookingAdmin.web.hook.HookServer;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Query;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -24,12 +23,12 @@ import static fi.iki.elonen.NanoHTTPD.newFixedLengthResponse;
 public class MemberProfileHandler extends HookHandler {
 
     public NanoHTTPD.Response handle(String uri, Map<String, String> header, String body, NanoHTTPD.Method method) {
-        String idToken = HookRouter.getIdToken(header);
+        String idToken = HookServer.getIdToken(header);
         NanoHTTPD.Response r = null;
 
         if (uri.equals("/MemberProfiles/profileList")) {
             try {
-                if (HookRouter.checkPermission(idToken, UserPermission.LEADER)) {
+                if (HookServer.checkPermission(idToken, UserPermission.LEADER)) {
                     List<com.github.team6083.overlookingAdmin.module.MemberProfile> list = MemberProfileCollection.getAll();
 
                     JSONArray out = new JSONArray();

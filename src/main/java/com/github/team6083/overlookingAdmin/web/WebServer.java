@@ -1,7 +1,7 @@
 package com.github.team6083.overlookingAdmin.web;
 
 import com.github.team6083.overlookingAdmin.OverAdminServer;
-import com.github.team6083.overlookingAdmin.web.hook.HookHandler;
+import com.github.team6083.overlookingAdmin.web.hook.HookServer;
 import fi.iki.elonen.NanoHTTPD;
 import org.apache.commons.io.IOUtils;
 
@@ -15,13 +15,13 @@ public class WebServer extends NanoHTTPD {
     private boolean detail;
     private static final int authFailTime = 2;
     private Map<String, Integer> authFailCount = new HashMap<String, Integer>();
-    private HookHandler hookHandler;
+    private HookServer hookServer;
 
     public WebServer(int port) throws IOException {
         super(port);
         quiet = false;
         detail = false;
-        hookHandler = new HookHandler();
+        hookServer = new HookServer();
 
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
     }
@@ -56,7 +56,7 @@ public class WebServer extends NanoHTTPD {
 
         if (uri.contains("/hook/")) {
             try {
-                return hookHandler.handle(session);
+                return hookServer.handle(session);
             } catch (IOException | ResponseException ex) {
                 ex.printStackTrace();
             }

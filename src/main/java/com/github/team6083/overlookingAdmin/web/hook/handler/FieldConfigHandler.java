@@ -1,10 +1,9 @@
 package com.github.team6083.overlookingAdmin.web.hook.handler;
 
 import com.github.team6083.overlookingAdmin.firebase.db.FieldConfigCollection;
-import com.github.team6083.overlookingAdmin.module.FieldConfig;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
 import com.github.team6083.overlookingAdmin.web.hook.HookHandler;
-import com.github.team6083.overlookingAdmin.web.hook.HookRouter;
+import com.github.team6083.overlookingAdmin.web.hook.HookServer;
 import com.google.firebase.auth.FirebaseAuthException;
 import fi.iki.elonen.NanoHTTPD;
 import org.json.JSONArray;
@@ -20,13 +19,13 @@ import static fi.iki.elonen.NanoHTTPD.newFixedLengthResponse;
 public class FieldConfigHandler extends HookHandler {
     @Override
     public NanoHTTPD.Response handle(String uri, Map<String, String> header, String body, NanoHTTPD.Method method) {
-        String idToken = HookRouter.getIdToken(header);
+        String idToken = HookServer.getIdToken(header);
         NanoHTTPD.Response r = null;
 
 
         if (uri.equals("/profileList")) {
             try {
-                if (HookRouter.checkPermission(idToken, UserPermission.LEADER)) {
+                if (HookServer.checkPermission(idToken, UserPermission.LEADER)) {
                     List<com.github.team6083.overlookingAdmin.module.FieldConfig> list = FieldConfigCollection.getAll();
 
                     JSONArray out = new JSONArray();

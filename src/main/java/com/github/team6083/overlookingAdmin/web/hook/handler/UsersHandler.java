@@ -5,7 +5,7 @@ import com.github.team6083.overlookingAdmin.firebase.db.UsersCollection;
 import com.github.team6083.overlookingAdmin.module.User;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
 import com.github.team6083.overlookingAdmin.web.hook.HookHandler;
-import com.github.team6083.overlookingAdmin.web.hook.HookRouter;
+import com.github.team6083.overlookingAdmin.web.hook.HookServer;
 import com.google.firebase.auth.ExportedUserRecord;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.ListUsersPage;
@@ -25,12 +25,12 @@ import org.json.JSONObject;
 public class UsersHandler extends HookHandler {
     @Override
     public NanoHTTPD.Response handle(String uri, Map<String, String> header, String body, NanoHTTPD.Method method) {
-        String idToken = HookRouter.getIdToken(header);
+        String idToken = HookServer.getIdToken(header);
         NanoHTTPD.Response r = null;
 
         if (uri.equals("/users/usersList")) {
             try {
-                if (HookRouter.checkPermission(idToken, UserPermission.LEADER)) {
+                if (HookServer.checkPermission(idToken, UserPermission.LEADER)) {
                     ListUsersPage page = Auth.getListUsersPage();
                     JSONArray array = new JSONArray();
 
