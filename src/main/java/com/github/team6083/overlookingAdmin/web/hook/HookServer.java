@@ -21,8 +21,14 @@ import java.util.concurrent.ExecutionException;
 public class HookServer {
 
     public static final String hookURL = "/hook";
+    public static boolean init = false;
 
-    public NanoHTTPD.Response handle(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
+    public NanoHTTPD.Response handle(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException, NoSuchMethodException {
+        if(!init){
+            HookRouter.init();
+            init = true;
+        }
+
         NanoHTTPD.Response r;
         String uri = session.getUri();
         uri = uri.substring(hookURL.length());
@@ -31,6 +37,9 @@ public class HookServer {
         HookHandler handler = HookRouter.getHandler(uri);
 
         if (handler != null) {
+
+            uri = uri.substring(HookRouter.getAppUri(uri).length());
+
             String body = "";
             if (session.getMethod().equals(NanoHTTPD.Method.POST)) {
                 session.parseBody(new HashMap<>());

@@ -4,70 +4,58 @@ import com.github.team6083.overlookingAdmin.firebase.db.MemberProfileCollection;
 import com.github.team6083.overlookingAdmin.firebase.db.UsersCollection;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
 import com.github.team6083.overlookingAdmin.web.hook.HookHandler;
-import com.github.team6083.overlookingAdmin.web.hook.HookServer;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Query;
-import com.google.firebase.auth.FirebaseAuthException;
 import fi.iki.elonen.NanoHTTPD;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static fi.iki.elonen.NanoHTTPD.newFixedLengthResponse;
 
 public class MemberProfileHandler extends HookHandler {
 
-    public NanoHTTPD.Response handle(String uri, Map<String, String> header, String body, NanoHTTPD.Method method) {
-        String idToken = HookServer.getIdToken(header);
-        NanoHTTPD.Response r = null;
+    public MemberProfileHandler() throws NoSuchMethodException {
+        super();
+    }
 
-        if (uri.equals("/MemberProfiles/profileList")) {
-            try {
-                if (HookServer.checkPermission(idToken, UserPermission.LEADER)) {
-                    List<com.github.team6083.overlookingAdmin.module.MemberProfile> list = MemberProfileCollection.getAll();
+    @Override
+    protected void setHookMethodMap() throws NoSuchMethodException {
+        hookMethodMap.put("/profileList", this.getClass().getMethod("profileList", String.class), UserPermission.LEADER, NanoHTTPD.Method.GET);
+    }
 
-                    JSONArray out = new JSONArray();
+    private NanoHTTPD.Response profileList(String body) throws ExecutionException, InterruptedException {
+        List<com.github.team6083.overlookingAdmin.module.MemberProfile> list = MemberProfileCollection.getAll();
 
-                    for (com.github.team6083.overlookingAdmin.module.MemberProfile memberProfile: list){
-                        JSONObject object = memberProfile.encodeJSON();
-                        object.put("uid", memberProfile.documentReference.getId());
-                        object.put("configName", memberProfile.getFields().configName);
+        JSONArray out = new JSONArray();
 
-                        Query query = UsersCollection.getCollection().whereEqualTo("memberProfileRef", memberProfile.documentReference.getId());
-                        Iterator it = query.get().get().iterator();
+        for (com.github.team6083.overlookingAdmin.module.MemberProfile memberProfile: list){
+            JSONObject object = memberProfile.encodeJSON();
+            object.put("uid", memberProfile.documentReference.getId());
+            object.put("configName", memberProfile.getFields().configName);
 
-                        JSONArray linkedArr = new JSONArray();
-                        while (it.hasNext()){
-                            DocumentSnapshot documentSnapshot = (DocumentSnapshot) it.next();
-                            JSONObject json = new JSONObject(documentSnapshot.getData());
+            Query query = UsersCollection.getCollection().whereEqualTo("memberProfileRef", memberProfile.documentReference.getId());
+            Iterator it = query.get().get().iterator();
 
-                            JSONObject userOut = new JSONObject();
-                            userOut.put("name", json.getString("name"));
-                            userOut.put("email", json.getString("email"));
-                            linkedArr.put(userOut);
-                        }
+            JSONArray linkedArr = new JSONArray();
+            while (it.hasNext()){
+                DocumentSnapshot documentSnapshot = (DocumentSnapshot) it.next();
+                JSONObject json = new JSONObject(documentSnapshot.getData());
 
-                        object.put("linkedAcc", linkedArr);
-
-                        out.put(object);
-                    }
-
-                    r = newFixedLengthResponse(out.toString());
-                } else {
-                    r = newFixedLengthResponse(NanoHTTPD.Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, "no permission");
-                }
-            } catch (InterruptedException | ExecutionException | ParseException e) {
-                e.printStackTrace();
-            } catch (FirebaseAuthException e) {
-                e.printStackTrace();
+                JSONObject userOut = new JSONObject();
+                userOut.put("name", json.getString("name"));
+                userOut.put("email", json.getString("email"));
+                linkedArr.put(userOut);
             }
+
+            object.put("linkedAcc", linkedArr);
+
+            out.put(object);
         }
 
-        return r;
+        return newFixedLengthResponse(out.toString());
     }
 }

@@ -12,18 +12,22 @@ public class HookRouter {
 
     private static Map<String, HookHandler> handlerMap = new HashMap<>();
 
-    public static void init() {
-        handlerMap.put("users", new UsersHandler());
-        handlerMap.put("apps", new AppsHandler());
-        handlerMap.put("memberProfile", new MemberProfileHandler());
-        handlerMap.put("fieldConfig", new FieldConfigHandler());
+    public static void init() throws NoSuchMethodException {
+        handlerMap.put("/users", new UsersHandler());
+        handlerMap.put("/apps", new AppsHandler());
+        handlerMap.put("/memberProfile", new MemberProfileHandler());
+        handlerMap.put("/fieldConfig", new FieldConfigHandler());
     }
 
     public static HookHandler getHandler(String uri) {
-        if (handlerMap.containsKey(uri.split("/")[1])) {
-            return handlerMap.get(uri.split("/")[1]);
+        if (handlerMap.containsKey(getAppUri(uri))) {
+            return handlerMap.get(getAppUri(uri));
         }
         return null;
+    }
+
+    public static String getAppUri(String uri){
+        return "/" + uri.split("/")[1];
     }
 
 }

@@ -5,7 +5,6 @@ import com.github.team6083.overlookingAdmin.firebase.db.UsersCollection;
 import com.github.team6083.overlookingAdmin.module.User;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
 import com.github.team6083.overlookingAdmin.web.hook.HookHandler;
-import com.github.team6083.overlookingAdmin.web.hook.HookServer;
 import com.google.firebase.auth.ExportedUserRecord;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.ListUsersPage;
@@ -13,63 +12,59 @@ import fi.iki.elonen.NanoHTTPD;
 import org.json.JSONArray;
 
 import java.text.ParseException;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static fi.iki.elonen.NanoHTTPD.*;
 
-import fi.iki.elonen.NanoHTTPD.Response.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class UsersHandler extends HookHandler {
+    public UsersHandler() throws NoSuchMethodException {
+        super();
+    }
+
     @Override
-    public NanoHTTPD.Response handle(String uri, Map<String, String> header, String body, NanoHTTPD.Method method) {
-        String idToken = HookServer.getIdToken(header);
-        NanoHTTPD.Response r = null;
+    protected void setHookMethodMap() throws NoSuchMethodException {
+        hookMethodMap.put("/usersList", this.getClass().getMethod("usersList", String.class), UserPermission.LEADER, NanoHTTPD.Method.GET);
+        hookMethodMap.put("/addUser", this.getClass().getMethod("addUser", String.class), UserPermission.LEADER, Method.POST);
+    }
 
-        if (uri.equals("/users/usersList")) {
-            try {
-                if (HookServer.checkPermission(idToken, UserPermission.LEADER)) {
-                    ListUsersPage page = Auth.getListUsersPage();
-                    JSONArray array = new JSONArray();
+    private Response usersList(String body) throws InterruptedException, ExecutionException, FirebaseAuthException, ParseException {
+        ListUsersPage page = Auth.getListUsersPage();
+        JSONArray array = new JSONArray();
 
-                    while (page != null) {
-                        for (ExportedUserRecord userRecord : page.getValues()) {
-                            User user = UsersCollection.getUser(userRecord);
-                            JSONObject json;
-                            if (user != null) {
-                                json = user.encodeJSON(true);
-                                array.put(json);
-                            }
-
-                        }
-                        page = page.getNextPage();
-                    }
-
-                    r = newFixedLengthResponse(array.toString());
-                } else {
-                    r = newFixedLengthResponse(Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, "no permission");
+        while (page != null) {
+            for (ExportedUserRecord userRecord : page.getValues()) {
+                User user = UsersCollection.getUser(userRecord);
+                JSONObject json;
+                if (user != null) {
+                    json = user.encodeJSON(true);
+                    array.put(json);
                 }
-            } catch (InterruptedException | ExecutionException | ParseException e) {
-                e.printStackTrace();
-            } catch (FirebaseAuthException e) {
-                e.printStackTrace();
-            }
-        } else if (uri.equals("/users/addUser")) {
-            JSONObject jsonObject;
-            try {
-                jsonObject = new JSONObject(body);
-            } catch (JSONException e){
-                return badRequest("json invalid");
-            }
 
-            if (!jsonObject.has("email") || !jsonObject.has("psw")) {
-                return badRequest("email and psw is required");
             }
-
+            page = page.getNextPage();
         }
 
-        return r;
+        return newFixedLengthResponse(array.toString());
     }
+
+    private Response addUser(String body) {
+        JSONObject jsonObject;
+        try {
+            jsonObject = new JSONObject(body);
+        } catch (JSONException e) {
+            return badRequest("json invalid");
+        }
+
+        if (!jsonObject.has("email") || !jsonObject.has("psw")) {
+            return badRequest("email and psw is required");
+        }
+
+        // TODO add user
+
+        return okResponse("add user success");
+    }
+
 }
