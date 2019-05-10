@@ -12,7 +12,6 @@ firebase.initializeApp(config);
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
         console.log("User login: ", user.email);
-        console.log(user.providerData);
     } else {
         // No user is signed in.
         console.log("User logout");
