@@ -15,7 +15,7 @@ public class HookRouter {
     public static void init() throws NoSuchMethodException {
         handlerMap.put("/users", new UsersHandler());
         handlerMap.put("/apps", new AppsHandler());
-        handlerMap.put("/memberProfile", new MemberProfileHandler());
+        handlerMap.put("/memberProfiles", new MemberProfileHandler());
         handlerMap.put("/fieldConfig", new FieldConfigHandler());
     }
 
