@@ -1,22 +1,5 @@
-let configsListReq = new XMLHttpRequest();
-
-configsListReq.open("GET", "/hook/FieldConfig/profileList");
-
-firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-        user.getIdToken().then((idToken) => {
-            configsListReq.setRequestHeader("auth-idtoken", idToken);
-            configsListReq.send();
-        }).catch((err) => {
-            console.err(err);
-        });
-    }
-});
-
-const configsTable = $("#configsTable").DataTable();
-
-configsListReq.onload = () => {
-    const response = JSON.parse(configsListReq.response);
+sendHook("/hook/fieldConfig/profileList", "GET", undefined, (response) => {
+    response = JSON.parse(response);
     console.log(response);
 
     for (let i = 0; i < response.length; i++) {
@@ -25,7 +8,9 @@ configsListReq.onload = () => {
 
         configsTable.row.add([u.uid, u.name, ""]).draw();
     }
-};
+});
+
+const configsTable = $("#configsTable").DataTable();
 
 const temp = (num) => {
     let tableBody = $("#editFieldTable tbody");

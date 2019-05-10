@@ -1,22 +1,5 @@
-let usersListReq = new XMLHttpRequest();
-
-usersListReq.open("GET", "/hook/users/usersList");
-
-firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-        user.getIdToken().then((idToken) => {
-            usersListReq.setRequestHeader("auth-idtoken", idToken);
-            usersListReq.send();
-        }).catch((err) => {
-            console.err(err);
-        });
-    }
-});
-
-const usersTable = $("#usersTable").DataTable();
-
-usersListReq.onload = () => {
-    const response = JSON.parse(usersListReq.response);
+sendHook("/hook/users/usersList", "GET", undefined, (response) => {
+    response = JSON.parse(response);
     console.log(response);
 
     for(let i=0;i<response.length;i++){
@@ -39,5 +22,8 @@ usersListReq.onload = () => {
 
         usersTable.row.add([u.uid, u.name, u.email, classData, u.permission, status]).draw();
     }
-};
+});
+
+const usersTable = $("#usersTable").DataTable();
+
 

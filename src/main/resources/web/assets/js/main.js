@@ -41,3 +41,26 @@ const authWarnFunc = ()=>{
 };
 
 const authWarnTimeout = 3000;
+
+function sendHook(uri, method, body, callback) {
+    let xmlHttpRequest = new XMLHttpRequest();
+
+    xmlHttpRequest.open(method, uri);
+
+    xmlHttpRequest.onload = () => {
+        callback(xmlHttpRequest.response);
+    };
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            user.getIdToken().then((idToken) => {
+                xmlHttpRequest.setRequestHeader("auth-idtoken", idToken);
+                xmlHttpRequest.send(body);
+            }).catch((err) => {
+                console.err(err);
+            });
+        }
+    });
+
+    return xmlHttpRequest;
+}
