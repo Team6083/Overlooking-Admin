@@ -26,11 +26,11 @@ public class UsersHandler extends HookHandler {
 
     @Override
     protected void setHookMethodMap() throws NoSuchMethodException {
-        hookMethodMap.put("/usersList", this.getClass().getMethod("usersList", String.class), UserPermission.LEADER, NanoHTTPD.Method.GET);
-        hookMethodMap.put("/addUser", this.getClass().getMethod("addUser", String.class), UserPermission.LEADER, Method.POST);
+        hookMethodMap.put("/usersList", UsersHandler.class.getMethod("usersList", String.class), UserPermission.LEADER, NanoHTTPD.Method.GET);
+        hookMethodMap.put("/addUser", UsersHandler.class.getMethod("addUser", String.class), UserPermission.LEADER, Method.POST);
     }
 
-    private Response usersList(String body) throws InterruptedException, ExecutionException, FirebaseAuthException, ParseException {
+    public Response usersList(String body) throws InterruptedException, ExecutionException, FirebaseAuthException, ParseException {
         ListUsersPage page = Auth.getListUsersPage();
         JSONArray array = new JSONArray();
 
@@ -50,7 +50,7 @@ public class UsersHandler extends HookHandler {
         return newFixedLengthResponse(array.toString());
     }
 
-    private Response addUser(String body) {
+    public Response addUser(String body) {
         JSONObject jsonObject;
         try {
             jsonObject = new JSONObject(body);

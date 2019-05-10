@@ -57,7 +57,7 @@ public class WebServer extends NanoHTTPD {
         if (uri.contains("/hook/")) {
             try {
                 return hookServer.handle(session);
-            } catch (IOException | ResponseException ex) {
+            } catch (IOException | ResponseException | NoSuchMethodException ex) {
                 ex.printStackTrace();
             }
         }

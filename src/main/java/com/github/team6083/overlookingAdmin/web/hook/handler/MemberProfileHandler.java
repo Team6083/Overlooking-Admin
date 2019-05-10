@@ -24,10 +24,10 @@ public class MemberProfileHandler extends HookHandler {
 
     @Override
     protected void setHookMethodMap() throws NoSuchMethodException {
-        hookMethodMap.put("/profileList", this.getClass().getMethod("profileList", String.class), UserPermission.LEADER, NanoHTTPD.Method.GET);
+        hookMethodMap.put("/profileList", MemberProfileHandler.class.getMethod("profileList", String.class), UserPermission.LEADER, NanoHTTPD.Method.GET);
     }
 
-    private NanoHTTPD.Response profileList(String body) throws ExecutionException, InterruptedException {
+    public NanoHTTPD.Response profileList(String body) throws ExecutionException, InterruptedException {
         List<com.github.team6083.overlookingAdmin.module.MemberProfile> list = MemberProfileCollection.getAll();
 
         JSONArray out = new JSONArray();

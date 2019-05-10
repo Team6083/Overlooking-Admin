@@ -19,7 +19,7 @@ public class AppsHandler extends HookHandler {
 
     @Override
     protected void setHookMethodMap() throws NoSuchMethodException {
-        hookMethodMap.put("/appsList", this.getClass().getMethod("appsList", String.class), UserPermission.ADMIN, NanoHTTPD.Method.GET);
+        hookMethodMap.put("/appsList", AppsHandler.class.getMethod("appsList", String.class), UserPermission.ADMIN, NanoHTTPD.Method.GET);
     }
 
     public NanoHTTPD.Response appsList(String body) throws ExecutionException, InterruptedException {
