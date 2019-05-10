@@ -1,65 +1,34 @@
 package com.github.team6083.overlookingAdmin.web.hook;
 
-import com.github.team6083.overlookingAdmin.firebase.Auth;
-import com.github.team6083.overlookingAdmin.firebase.db.UsersCollection;
-import com.github.team6083.overlookingAdmin.module.User;
-import com.github.team6083.overlookingAdmin.util.UserPermission;
-import com.github.team6083.overlookingAdmin.web.hook.worker.AppsWorker;
-import com.github.team6083.overlookingAdmin.web.hook.worker.FieldConfigWorker;
-import com.github.team6083.overlookingAdmin.web.hook.worker.MemberProfilesWorker;
-import com.github.team6083.overlookingAdmin.web.hook.worker.UsersWorker;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;
 import fi.iki.elonen.NanoHTTPD;
+import fi.iki.elonen.NanoHTTPD.*;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
-public class HookHandler {
-    public NanoHTTPD.Response handle(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
-        NanoHTTPD.Response r = null;
-        String uri = session.getUri();
-        uri = uri.substring(5);
+public abstract class HookHandler {
+    protected abstract Response handle(String uri, Map<String, String> header, String body, NanoHTTPD.Method method);
 
-        HookWorker worker = null;
-
-        // route handlers
-        if (uri.contains("/users/")) {
-            worker = new UsersWorker();
-        } else if (uri.contains("/Apps/")) {
-            worker = new AppsWorker();
-        } else if (uri.contains("/MemberProfiles/")) {
-            worker = new MemberProfilesWorker();
-        } else if (uri.contains("/FieldConfig/")) {
-            worker = new FieldConfigWorker();
-        }
-
-        if (worker != null) {
-            String body = "";
-            if (session.getMethod().equals(NanoHTTPD.Method.POST)) {
-                session.parseBody(new HashMap<String, String>());
-                body = session.getQueryParameterString();
-            }
-            r = worker.serve(uri, session.getHeaders(), body, session.getMethod());
-        } else {
-            System.err.println("ERROR: worker is null");
-        }
-
-        return r;
+    protected Response sendTextResponse(Response.Status status, String msg) {
+        return NanoHTTPD.newFixedLengthResponse(status, NanoHTTPD.MIME_PLAINTEXT, msg);
     }
 
-    public static boolean checkPermission(String idToken, UserPermission targetPermission) throws InterruptedException, ExecutionException, ParseException, FirebaseAuthException {
-        UserRecord userRecord = Auth.getUserFromIdToken(idToken);
-
-        User user = UsersCollection.getUser(userRecord);
-
-        return user.checkPermission(targetPermission);
+    protected Response okResponse(String msg){
+        return sendTextResponse(Response.Status.OK, msg);
     }
 
-    public static String getIdToken(Map<String, String> header) {
-        return header.get("auth-idtoken");
+    protected Response badRequest(String msg) {
+        return sendTextResponse(Response.Status.BAD_REQUEST, msg);
+    }
+
+    protected Response unauthorized(String msg) {
+        return sendTextResponse(Response.Status.UNAUTHORIZED, msg);
+    }
+
+    protected Response forbidden(String msg) {
+        return sendTextResponse(Response.Status.FORBIDDEN, msg);
+    }
+
+    protected Response methodNotAllowed(String msg) {
+        return sendTextResponse(Response.Status.METHOD_NOT_ALLOWED, msg);
     }
 }

@@ -1,36 +1,29 @@
-package com.github.team6083.overlookingAdmin.web.hook.worker;
+package com.github.team6083.overlookingAdmin.web.hook.handler;
 
-import com.github.team6083.overlookingAdmin.firebase.Auth;
 import com.github.team6083.overlookingAdmin.firebase.db.AppsCollection;
-import com.github.team6083.overlookingAdmin.firebase.db.UsersCollection;
 import com.github.team6083.overlookingAdmin.module.App;
-import com.github.team6083.overlookingAdmin.module.User;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
 import com.github.team6083.overlookingAdmin.web.hook.HookHandler;
-import com.github.team6083.overlookingAdmin.web.hook.HookWorker;
-import com.google.firebase.auth.ExportedUserRecord;
+import com.github.team6083.overlookingAdmin.web.hook.HookRouter;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.ListUsersPage;
 import fi.iki.elonen.NanoHTTPD;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.text.ParseException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static fi.iki.elonen.NanoHTTPD.newFixedLengthResponse;
 
-public class AppsWorker implements HookWorker {
+public class AppsHandler extends HookHandler {
     @Override
-    public NanoHTTPD.Response serve(String uri, Map<String, String> header, String body, NanoHTTPD.Method method) {
-        String idToken = HookHandler.getIdToken(header);
+    public NanoHTTPD.Response handle(String uri, Map<String, String> header, String body, NanoHTTPD.Method method) {
+        String idToken = HookRouter.getIdToken(header);
         NanoHTTPD.Response r = null;
 
-        if (uri.equals("/Apps/appsList")) {
+        if (uri.equals("/AppsHandler/appsList")) {
             try {
-                if (HookHandler.checkPermission(idToken, UserPermission.ADMIN)) {
+                if (HookRouter.checkPermission(idToken, UserPermission.ADMIN)) {
                     JSONArray array = App.encodeAppsJSON(AppsCollection.getAllApps());
 
                     r = newFixedLengthResponse(array.toString());

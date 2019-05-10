@@ -1,11 +1,11 @@
-package com.github.team6083.overlookingAdmin.web.hook.worker;
+package com.github.team6083.overlookingAdmin.web.hook.handler;
 
 import com.github.team6083.overlookingAdmin.firebase.db.MemberProfileCollection;
 import com.github.team6083.overlookingAdmin.firebase.db.UsersCollection;
 import com.github.team6083.overlookingAdmin.module.MemberProfile;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
 import com.github.team6083.overlookingAdmin.web.hook.HookHandler;
-import com.github.team6083.overlookingAdmin.web.hook.HookWorker;
+import com.github.team6083.overlookingAdmin.web.hook.HookRouter;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Query;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -21,20 +21,20 @@ import java.util.concurrent.ExecutionException;
 
 import static fi.iki.elonen.NanoHTTPD.newFixedLengthResponse;
 
-public class MemberProfilesWorker implements HookWorker {
-    @Override
-    public NanoHTTPD.Response serve(String uri, Map<String, String> header, String body, NanoHTTPD.Method method) {
-        String idToken = HookHandler.getIdToken(header);
+public class MemberProfileHandler extends HookHandler {
+
+    public NanoHTTPD.Response handle(String uri, Map<String, String> header, String body, NanoHTTPD.Method method) {
+        String idToken = HookRouter.getIdToken(header);
         NanoHTTPD.Response r = null;
 
         if (uri.equals("/MemberProfiles/profileList")) {
             try {
-                if (HookHandler.checkPermission(idToken, UserPermission.LEADER)) {
-                    List<MemberProfile> list = MemberProfileCollection.getAll();
+                if (HookRouter.checkPermission(idToken, UserPermission.LEADER)) {
+                    List<com.github.team6083.overlookingAdmin.module.MemberProfile> list = MemberProfileCollection.getAll();
 
                     JSONArray out = new JSONArray();
 
-                    for (MemberProfile memberProfile: list){
+                    for (com.github.team6083.overlookingAdmin.module.MemberProfile memberProfile: list){
                         JSONObject object = memberProfile.encodeJSON();
                         object.put("uid", memberProfile.documentReference.getId());
                         object.put("configName", memberProfile.getFields().configName);
