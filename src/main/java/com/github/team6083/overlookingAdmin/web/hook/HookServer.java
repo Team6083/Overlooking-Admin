@@ -27,18 +27,8 @@ public class HookServer {
         String uri = session.getUri();
         uri = uri.substring(hookURL.length());
 
-        HookHandler handler = null;
-
         // route handlers
-        if (uri.contains("/users/")) {
-            handler = new UsersHandler();
-        } else if (uri.contains("/AppsHandler/")) {
-            handler = new AppsHandler();
-        } else if (uri.contains("/MemberProfiles/")) {
-            handler = new MemberProfileHandler();
-        } else if (uri.contains("/FieldConfigHandler/")) {
-            handler = new FieldConfigHandler();
-        }
+        HookHandler handler = HookRouter.getHandler(uri);
 
         if (handler != null) {
             String body = "";
