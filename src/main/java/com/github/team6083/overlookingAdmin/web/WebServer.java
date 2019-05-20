@@ -1,37 +1,43 @@
 package com.github.team6083.overlookingAdmin.web;
 
 import com.github.team6083.overlookingAdmin.OverAdminServer;
-import com.github.team6083.overlookingAdmin.util.router.StringRouter;
+import com.github.team6083.overlookingAdmin.util.router.UriRouter;
 import com.github.team6083.overlookingAdmin.web.hook.HookServer;
+import com.github.team6083.overlookingAdmin.web.pageHandler.IndexPage;
 import com.github.team6083.overlookingAdmin.web.pageHandler.UsersPage;
 import fi.iki.elonen.NanoHTTPD;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class WebServer extends NanoHTTPD {
     private boolean quiet;
     private boolean detail;
     private static final int authFailTime = 2;
-    private Map<String, Integer> authFailCount = new HashMap<String, Integer>();
+    private Map<String, Integer> authFailCount = new HashMap<>();
+
     private HookServer hookServer;
-    private StringRouter router = new StringRouter();
+    private UriRouter router = new UriRouter();
+    private Map<String, String> uriRewriteMap = new HashMap<>();
+
+    private StaticFileServer assetsHandler;
 
     public WebServer(int port) throws IOException {
         super(port);
         quiet = false;
         detail = false;
         hookServer = new HookServer();
-        setRoute();
+        assetsHandler = new StaticFileServer("/web", OverAdminServer.class);
+        init();
 
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
     }
 
-    private void setRoute() {
-        router.add("/users", new UsersPage());
+    private void init() {
+        router.add("/users", new FileHandler("/Users.html"), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
+        router.add("/index", new FileHandler("/index.html"), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
+
+        uriRewriteMap.put("/", "/index");
     }
 
     @Override
@@ -62,6 +68,9 @@ public class WebServer extends NanoHTTPD {
             }
         }
 
+        // lower case uri
+        uri = uri.toLowerCase();
+
         if (uri.contains("/hook/")) {
             try {
                 return hookServer.handle(session);
@@ -78,22 +87,29 @@ public class WebServer extends NanoHTTPD {
             //TODO add auth things
         }
 
-        if (uri.equals("/")) {
-            // index
-            uri = "/index.html";
-        } else if (uri.contains("/errHtml/")) {
+        if (uri.contains("/errHtml/")) {
             // 403
             return Template.getForbiddenResponse();
         }
         // serve special uri
 
-        if (!session.getMethod().equals(Method.GET)) {
-            return Template.getMethodNotAllowedResponse();
+        if (uriRewriteMap.containsKey(uri)) {
+            uri = uriRewriteMap.get(uri);
+            System.out.println(uri);
         }
-        // 405 Method Not Allowed
+        // handle uri rewrite
 
-        InputStream in = OverAdminServer.class.getResourceAsStream("/web" + uri);
-        Response r = null;
+        if (uri.contains("/assets/")) {
+            return assetsHandler.handle(session);
+        }
+        // handle assets
+
+        UriRouter.Handler routeHandler = router.get(uri);
+
+        // handle 404 not found
+        if (routeHandler == null) {
+            return Template.getNotFoundResponse();
+        }
 
         String authToken;
         if (auth == null) {
@@ -103,32 +119,13 @@ public class WebServer extends NanoHTTPD {
         }
         // handle authToken
 
-        byte[] fileReadIn;
-        if (in == null) {
-            // File not found, check router
-            if(router.checkUri(uri)){
-                r = router.getHandler(uri).handle(session);
-            } else{
-                r = Template.getNotFoundResponse();
-            }
-        } else if (uri.contains("/assets/")) {
-            // Serve resource files
-            try {
-                fileReadIn = IOUtils.toByteArray(in);
-                r = newFixedLengthResponse(Response.Status.OK, getMimeTypeForFile(uri), new String(fileReadIn, StandardCharsets.UTF_8));
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        } else if (!uri.contains("/server/") || authToken.equals(new String(Base64.getEncoder().encode("root:root".getBytes())))) {
-            // Auth passed or not required
-            try {
-                fileReadIn = IOUtils.toByteArray(in);
-                r = newFixedLengthResponse(Response.Status.OK, MIME_HTML, new String(fileReadIn, StandardCharsets.UTF_8));
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        } else {
-            // No auth return 401 error
+        if (routeHandler.method != session.getMethod()) {
+            return Template.getMethodNotAllowedResponse();
+        }
+        // check http method
+
+        if (routeHandler.accessControl == UriRouter.HandlerAccessLevel.PrivateAccess && !authToken.equals(new String(Base64.getEncoder().encode("root:root".getBytes())))) {
+            Response r;
             String remoteAddress = header.get("remote-addr");
             r = Template.getUnauthorizedResponse();
 
@@ -142,8 +139,12 @@ public class WebServer extends NanoHTTPD {
             } else {
                 authFailCount.put(remoteAddress, -authFailTime);
             }
+
+            return r;
+        } else if (routeHandler.accessControl == UriRouter.HandlerAccessLevel.AuthAccess) {
+            // handle auth access
         }
 
-        return r;
+        return routeHandler.routeHandler.handle(session);
     }
 }
