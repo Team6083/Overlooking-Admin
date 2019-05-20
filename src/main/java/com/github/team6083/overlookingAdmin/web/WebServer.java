@@ -1,7 +1,9 @@
 package com.github.team6083.overlookingAdmin.web;
 
 import com.github.team6083.overlookingAdmin.OverAdminServer;
+import com.github.team6083.overlookingAdmin.util.router.StringRouter;
 import com.github.team6083.overlookingAdmin.web.hook.HookServer;
+import com.github.team6083.overlookingAdmin.web.pageHandler.UsersPage;
 import fi.iki.elonen.NanoHTTPD;
 import org.apache.commons.io.IOUtils;
 
@@ -16,14 +18,20 @@ public class WebServer extends NanoHTTPD {
     private static final int authFailTime = 2;
     private Map<String, Integer> authFailCount = new HashMap<String, Integer>();
     private HookServer hookServer;
+    private StringRouter router = new StringRouter();
 
     public WebServer(int port) throws IOException {
         super(port);
         quiet = false;
         detail = false;
         hookServer = new HookServer();
+        setRoute();
 
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+    }
+
+    private void setRoute() {
+        router.add("/users", new UsersPage());
     }
 
     @Override
@@ -97,8 +105,12 @@ public class WebServer extends NanoHTTPD {
 
         byte[] fileReadIn;
         if (in == null) {
-            // File not found
-            r = Template.getNotFoundResponse();
+            // File not found, check router
+            if(router.checkUri(uri)){
+                r = router.getHandler(uri).handle(session);
+            } else{
+                r = Template.getNotFoundResponse();
+            }
         } else if (uri.contains("/assets/")) {
             // Serve resource files
             try {
