@@ -6,6 +6,11 @@ public class ClassData {
     public String className;
     public int number;
 
+    public ClassData(){
+        className = "";
+        number = -1;
+    }
+
     public JSONObject encodeJSON() {
         return encodeJSON(this);
     }

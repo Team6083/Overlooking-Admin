@@ -4,10 +4,6 @@ import com.github.team6083.overlookingAdmin.firebase.Auth;
 import com.github.team6083.overlookingAdmin.firebase.db.UsersCollection;
 import com.github.team6083.overlookingAdmin.module.User;
 import com.github.team6083.overlookingAdmin.util.UserPermission;
-import com.github.team6083.overlookingAdmin.web.hook.handler.AppsHandler;
-import com.github.team6083.overlookingAdmin.web.hook.handler.FieldConfigHandler;
-import com.github.team6083.overlookingAdmin.web.hook.handler.MemberProfileHandler;
-import com.github.team6083.overlookingAdmin.web.hook.handler.UsersHandler;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import fi.iki.elonen.NanoHTTPD;
@@ -24,7 +20,7 @@ public class HookServer {
     public static boolean init = false;
 
     public NanoHTTPD.Response handle(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException, NoSuchMethodException {
-        if(!init){
+        if (!init) {
             HookRouter.init();
             init = true;
         }
@@ -37,14 +33,15 @@ public class HookServer {
         HookHandler handler = HookRouter.getHandler(uri);
 
         if (handler != null) {
-
-            uri = uri.substring(HookRouter.getAppUri(uri).length());
-
+            HashMap<String, String> bodyMap = new HashMap<>();
             String body = "";
             if (session.getMethod().equals(NanoHTTPD.Method.POST)) {
-                session.parseBody(new HashMap<>());
-                body = session.getQueryParameterString();
+                session.parseBody(bodyMap);
+                body = bodyMap.get("postData");
             }
+            System.out.println("Handling hook '" + uri + "' with body: " + body);
+
+            uri = uri.substring(HookRouter.getAppUri(uri).length());
             r = handler.handle(uri, session.getHeaders(), body, session.getMethod());
         } else {
             r = NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "404 not found");

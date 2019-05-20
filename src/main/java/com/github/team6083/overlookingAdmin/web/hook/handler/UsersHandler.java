@@ -50,7 +50,7 @@ public class UsersHandler extends HookHandler {
         return newFixedLengthResponse(array.toString());
     }
 
-    public Response addUser(String body) {
+    public Response addUser(String body) throws InterruptedException, ExecutionException, ParseException {
         JSONObject jsonObject;
         try {
             jsonObject = new JSONObject(body);
@@ -58,11 +58,46 @@ public class UsersHandler extends HookHandler {
             return badRequest("json invalid");
         }
 
-        if (!jsonObject.has("email") || !jsonObject.has("psw")) {
-            return badRequest("email and psw is required");
+        if (!jsonObject.has("email") || !jsonObject.has("password") || !jsonObject.has("id")) {
+            return badRequest("id, email, password is required");
         }
 
-        // TODO add user
+        if(jsonObject.getString("email").equals("") || jsonObject.getString("password").equals("")){
+            return badRequest("email, password should not be blank");
+        }
+
+        User user;
+
+        if (!jsonObject.getString("id").equals("")) {
+            try {
+                user = UsersCollection.getUser(Auth.getUserByUID(jsonObject.getString("id")));
+            } catch (FirebaseAuthException e) {
+                return internalError(e.getMessage());
+            }
+        } else {
+            user = new User();
+        }
+
+        user.email = jsonObject.getString("email");
+
+        if (jsonObject.has("name")) {
+            user.name = jsonObject.getString("name");
+        } else {
+            user.name = "unknown";
+        }
+
+        if (jsonObject.has("userPermission")) {
+            user.permission = UserPermission.valueOf(jsonObject.getString("userPermission"));
+        }
+
+        try {
+//            UsersCollection.saveUser(user, jsonObject.getString("password"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return internalError(e.getMessage());
+        }
+
+        System.out.println(user.encodeJSON().toString());
 
         return okResponse("add user success");
     }

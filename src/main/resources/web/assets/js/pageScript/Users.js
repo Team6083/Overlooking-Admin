@@ -26,4 +26,26 @@ sendHook("/hook/users/usersList", "GET", undefined, (response) => {
 
 const usersTable = $("#usersTable").DataTable();
 
+$("#newUserBtn").on('click', ()=>{
+    $('#editUserModal').modal('show');
+});
+
+$("#editUserSave").on('click', ()=>{
+   let data = {
+       id:$ ("#editId").val(),
+       name: $("#editName").val(),
+       email: $("#editEmail").val(),
+       password: $("#editPassword").val(),
+       userPermission: $("#editPermission").val(),
+   };
+
+   sendHook("/hook/users/addUser", "POST", JSON.stringify(data), (response)=>{
+       let r = JSON.parse(response);
+       if(!r.ok){
+           console.error(r.msg);
+       } else {
+           console.log("user successfully saved")
+       }
+   });
+});
 

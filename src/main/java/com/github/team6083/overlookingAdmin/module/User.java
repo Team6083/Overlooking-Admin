@@ -23,6 +23,7 @@ public class User {
 
     public User() {
         permission = UserPermission.NONE;
+        classData = new ClassData();
     }
 
     public MemberProfile getProfile() throws ExecutionException, InterruptedException {
@@ -51,7 +52,7 @@ public class User {
         json.put("birthDay", user.birthDay);
         json.put("classData", user.classData.encodeJSON());
         json.put("permission", user.permission.ordinal());
-        json.put("position", user.permission);
+        json.put("position", user.position);
         json.put("memberProfileRef", user.memberProfileRef);
         return json;
     }

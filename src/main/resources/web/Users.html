@@ -35,19 +35,85 @@
     <div class="row mt-5">
         <div class="col-lg-2"></div>
         <div class="col col-lg-8">
-            <h1>Users list</h1>
-            <table id="usersTable" class="table">
-                <thead>
-                <tr>
-                    <th>uid</th>
-                    <th>name</th>
-                    <th>email</th>
-                    <th>class data</th>
-                    <th>p</th>
-                    <th>status</th>
-                </tr>
-                </thead>
-            </table>
+            <div class="row mb-2">
+                <div class="col-12">
+                    <h1>Users list</h1>
+                    <button class="btn btn-primary btn-sm" id="newUserBtn">New User</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <table id="usersTable" class="table">
+                        <thead>
+                        <tr>
+                            <th>uid</th>
+                            <th>name</th>
+                            <th>email</th>
+                            <th>class data</th>
+                            <th>p</th>
+                            <th>status</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2"></div>
+    </div>
+
+
+    <!-- edit user modal -->
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="editUserModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserTitle">Edit User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <fieldset disabled>
+                        <label for="editId">Firebase id</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="editId">
+                        </div>
+                    </fieldset>
+
+                    <label for="editName">Name</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="editName">
+                    </div>
+
+                    <label for="editEmail">Email</label>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" id="editEmail" required readonly>
+                    </div>
+
+                    <label for="editPassword">Password</label>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" id="editPassword" required>
+                    </div>
+
+                    <label for="editPermission">User Permission</label>
+                    <div class="input-group mb-3">
+                        <select class="form-control" id="editPermission">
+                            <option selected value="NONE">None</option>
+                            <option value="MEMBER">Member</option>
+                            <option value="LEADER">Leader</option>
+                            <option value="TEACHER">Teacher</option>
+                            <option value="ADMIN">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="editUserSave">Save changes</button>
+                </div>
+            </div>
         </div>
     </div>
 

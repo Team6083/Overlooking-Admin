@@ -57,8 +57,12 @@ public class WebServer extends NanoHTTPD {
         if (uri.contains("/hook/")) {
             try {
                 return hookServer.handle(session);
-            } catch (IOException | ResponseException | NoSuchMethodException ex) {
-                ex.printStackTrace();
+            } catch (IOException ioe) {
+                return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
+            } catch (NoSuchMethodException nsme) {
+                nsme.printStackTrace();
+            } catch (ResponseException re) {
+                return newFixedLengthResponse(re.getStatus(), MIME_PLAINTEXT, re.getMessage());
             }
         }
 

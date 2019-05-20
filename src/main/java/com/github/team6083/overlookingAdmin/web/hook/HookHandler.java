@@ -4,6 +4,7 @@ import com.github.team6083.overlookingAdmin.util.UserPermission;
 import com.google.firebase.auth.FirebaseAuthException;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.*;
+import org.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -70,26 +71,33 @@ public abstract class HookHandler {
     }
 
     protected Response okResponse(String msg) {
-        return sendTextResponse(Response.Status.OK, msg);
+        return sendTextResponse(Response.Status.OK, hookResponse(true, msg));
     }
 
     protected Response badRequest(String msg) {
-        return sendTextResponse(Response.Status.BAD_REQUEST, msg);
+        return sendTextResponse(Response.Status.BAD_REQUEST, hookResponse(false, msg));
     }
 
     protected Response unauthorized(String msg) {
-        return sendTextResponse(Response.Status.UNAUTHORIZED, msg);
+        return sendTextResponse(Response.Status.UNAUTHORIZED, hookResponse(false, msg));
     }
 
     protected Response forbidden(String msg) {
-        return sendTextResponse(Response.Status.FORBIDDEN, msg);
+        return sendTextResponse(Response.Status.FORBIDDEN, hookResponse(false, msg));
     }
 
     protected Response methodNotAllowed(String msg) {
-        return sendTextResponse(Response.Status.METHOD_NOT_ALLOWED, msg);
+        return sendTextResponse(Response.Status.METHOD_NOT_ALLOWED, hookResponse(false, msg));
     }
 
     protected Response internalError(String msg) {
-        return sendTextResponse(Response.Status.INTERNAL_ERROR, "internal error: " + msg);
+        return sendTextResponse(Response.Status.INTERNAL_ERROR, hookResponse(false, msg));
+    }
+
+    protected String hookResponse(boolean ok, String msg){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("ok", ok);
+        jsonObject.put("msg", msg);
+        return jsonObject.toString();
     }
 }
