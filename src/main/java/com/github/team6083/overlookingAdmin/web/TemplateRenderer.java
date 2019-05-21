@@ -15,7 +15,7 @@ import static fi.iki.elonen.NanoHTTPD.*;
 
 public class TemplateRenderer {
     public static NanoHTTPD.Response handle(String filePath, JtwigModel model) {
-        JtwigTemplate template = JtwigTemplate.classpathTemplate("web\\" + filePath);
+        JtwigTemplate template = JtwigTemplate.classpathTemplate("web/" + filePath);
         return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.OK, MIME_HTML, template.render(model));
     }
 }

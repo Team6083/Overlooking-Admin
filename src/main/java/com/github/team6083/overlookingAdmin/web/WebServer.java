@@ -34,8 +34,12 @@ public class WebServer extends NanoHTTPD {
     }
 
     private void init() {
-        router.add("/users", new FileHandler("/Users.html"), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
-        router.add("/index", new FileHandler("/index.html"), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
+        router.add("/login", new FileHandler("/login.html"), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
+
+        router.add("/users", new UsersPage(), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
+        router.add("/index", new FileHandler("/index.html"), Method.GET, UriRouter.HandlerAccessLevel.PrivateAccess);
+        router.add("/apps", new FileHandler("/Apps.html"), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
+
 
         uriRewriteMap.put("/", "/index");
     }
@@ -68,8 +72,6 @@ public class WebServer extends NanoHTTPD {
             }
         }
 
-        // lower case uri
-        uri = uri.toLowerCase();
 
         if (uri.contains("/hook/")) {
             try {

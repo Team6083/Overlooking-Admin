@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}{% endblock %} - Overlooking 6083</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+<div id="navBarContainer">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #fdfeff;">
+        <a class="navbar-brand" href="/">#6083 Overlooking Admin</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Users.html">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Apps.html">Apps</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/MemberProfiles.html">MemberProfiles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/FieldConfig.html">FieldConfig</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Admin</a>
+                </li>
+            </ul>
+            <span class="navbar-text mt-2 mt-lg-0 mr-2 ml-lg-2" id="navUser"></span>
+        </div>
+        <button class="btn btn-primary mt-2 mt-lg-0" id="toggleAuthBtn" onclick="toggleAuth();">Logout</button>
+    </nav>
+</div>
+
+<div class="container-fluid">
+
+    {% block body %} {%endblock%}
+
+    <div class="row mt-5">
+        <div class="col-lg-2"></div>
+        <div class="col col-lg-8">
+
+        </div>
+    </div>
+
+</div>
+
+
+<div class="ml-md-5 ml-2 mr-md-5 mr-2">
+    <hr>
+    <div class="text-center">
+        <p>Overlooking Admin System <span class="badge badge-warning">alpha-1</span></p>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="https://overlooking-admin.firebaseapp.com/overlookingOAuth/firebase.js"></script>
+
+<script>
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            $("#navUser").html(user.displayName);
+            $("#toggleAuthBtn").html("Logout");
+        } else {
+            $("#navUser").html("");
+            $("#toggleAuthBtn").html("Login");
+        }
+    });
+
+    function toggleAuth() {
+        if (firebase.auth().currentUser === null) {
+            window.location.href = "/login.html";
+        } else {
+            signOut();
+        }
+    }
+</script>
+
+<div class="modal fade" id="authWarnModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">ERROR: You are not authorized</h5>
+            </div>
+            <div class="modal-body">
+                You are not authorized to access this page !!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">back</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showAuthWarn() {
+        $('#authWarnModal').modal({
+            "backdrop": 'static',
+            "keyboard": false
+        });
+        $('#authWarnModal').modal("show");
+    }
+</script>
+
+{% block script %}{% endblock %}
+</body>
+
+</html>
