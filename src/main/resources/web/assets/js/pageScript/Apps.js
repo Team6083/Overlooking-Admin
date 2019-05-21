@@ -24,5 +24,5 @@ sendHook("/hook/apps/appsList", "GET", undefined, (response) => {
     }
 });
 
-const appsTable = $("#usersTable").DataTable();
+const appsTable = $("#appsTable").DataTable();
 

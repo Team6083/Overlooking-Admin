@@ -8,6 +8,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/pace.css">
 
     {% block head %}{% endblock %}
 </head>
@@ -26,16 +27,16 @@
                     <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Users.html">Users</a>
+                    <a class="nav-link" href="/users">Users</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Apps.html">Apps</a>
+                    <a class="nav-link" href="/apps">Apps</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/MemberProfiles.html">MemberProfiles</a>
+                    <a class="nav-link" href="/memberProfiles">MemberProfiles</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/FieldConfig.html">FieldConfig</a>
+                    <a class="nav-link" href="/fieldConfig">FieldConfig</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Admin</a>
@@ -75,6 +76,7 @@
 <script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="https://overlooking-admin.firebaseapp.com/overlookingOAuth/firebase.js"></script>
+<script src="assets/js/pace.js"></script>
 
 <script>
     firebase.auth().onAuthStateChanged(function (user) {

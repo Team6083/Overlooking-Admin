@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %} Apps {% endblock %}
+
+{% block body %}
+<div class="row mt-5">
+    <div class="col-lg-2"></div>
+    <div class="col col-lg-8">
+        <h1>Apps list</h1>
+        <table id="appsTable" class="table">
+            <thead>
+            <tr>
+                <th>docId</th>
+                <th>name</th>
+                <th>app_token</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+{%endblock%}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.css"/>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.js"></script>
+<script src="assets/js/pageScript/Apps.js"></script>
+{% endblock %}
