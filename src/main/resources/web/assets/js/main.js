@@ -34,8 +34,8 @@ function signOut() {
     });
 }
 
-const authWarnFunc = ()=>{
-    if(!firebase.auth().currentUser){
+const authWarnFunc = () => {
+    if (!firebase.auth().currentUser) {
         showAuthWarn();
     }
 };

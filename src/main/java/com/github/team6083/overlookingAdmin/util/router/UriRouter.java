@@ -36,6 +36,10 @@ public class UriRouter {
         routeTable.put(uri, new Handler(handler, method, accessLevel));
     }
 
+    public void add(String uri, RouteHandler handler) {
+        add(uri, handler, NanoHTTPD.Method.GET, HandlerAccessLevel.PublicAccess);
+    }
+
     public Handler get(String uri) {
         if (checkUri(uri)) {
             return routeTable.get(uri);

@@ -1,112 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
+{% block title %} Login {% endblock %}
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <title>Login - Overlooking 6083</title>
-
-    <script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
-    <script src="assets/js/main.js"></script>
-
-    <script src="https://overlooking-admin.firebaseapp.com/overlookingOAuth/firebase.js"></script>
-    <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
-    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
-    <script src="https://overlooking-admin.firebaseapp.com/overlookingOAuth/firebaseUI.js"></script>
-</head>
-
-<body>
-    <div class="container-fluid">
-
-        <div class="row mt-5">
-            <div class="col-lg-2"></div>
-            <div class="col col-lg-8">
-                <h2>Login</h2>
-                <div class="row">
-                    <div class="col-lg-8 col d-none">
-                        <form>
-                            <div class="form-group">
-                                <label for="usernameInput">User Name</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="usernameInput" name="loginUsername"
-                                        placeholder="Enter user name">
-                                </div>
-                                <small id="usernameHelp" class="form-text text-muted">Input your user name.</small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="passwordInput">Password</label>
-                                <input type="password" class="form-control" id="passwordInput" name="loginPassword"
-                                    placeholder="Password">
-                            </div>
-                            <input type="hidden" name="redirect" value="/">
-                            <button type="button" class="btn btn-primary">Login</button>
-                        </form>
+{% block body %}
+<div class="row mt-5">
+    <div class="col-lg-2"></div>
+    <div class="col col-lg-8">
+        <h2>Login</h2>
+        <div class="row">
+            <div class="col-lg-8 col d-none">
+                <form>
+                    <div class="form-group">
+                        <label for="usernameInput">User Name</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="usernameInput" name="loginUsername"
+                                   placeholder="Enter user name">
+                        </div>
+                        <small id="usernameHelp" class="form-text text-muted">Input your user name.</small>
                     </div>
-                    <div class="col-lg col" id="firebaseui-auth-container">
 
+                    <div class="form-group">
+                        <label for="passwordInput">Password</label>
+                        <input type="password" class="form-control" id="passwordInput" name="loginPassword"
+                               placeholder="Password">
                     </div>
-                </div>
+                    <input type="hidden" name="redirect" value="/">
+                    <button type="button" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+            <div class="col-lg col" id="firebaseui-auth-container">
+
             </div>
         </div>
     </div>
+</div>
+{%endblock%}
 
-    <div class="ml-md-5 ml-2 mr-md-5 mr-2">
-        <hr>
-        <div class="text-center">
-            <p>Overlooking Admin System <span class="badge badge-warning">alpha-1</span></p>
-        </div>
-    </div>
+{% block head %}
+
+<link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css"/>
+{% endblock %}
+
+{% block script %}
+<script src="https://overlooking-admin.firebaseapp.com/overlookingOAuth/firebase.js"></script>
+<script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+<script src="https://overlooking-admin.firebaseapp.com/overlookingOAuth/firebaseUI.js"></script>
 
 
-    <script>
-        var db = firebase.firestore();
+<script>
+    var db = firebase.firestore();
 
-        initAuthUI("#firebaseui-auth-container");
+    initAuthUI("#firebaseui-auth-container");
 
-        overAdminFirebase.auth().onAuthStateChanged(function (user) {
-            if (user) {
-                user.getIdToken().then(function (idToken) {
-                    console.log(idToken);
-                    var xmlHttp = new XMLHttpRequest();
-                    xmlHttp.open("POST", "https://us-central1-overlooking-admin.cloudfunctions.net/verifyIDToken");
-                    xmlHttp.setRequestHeader("Content-Type", "application/json");
-                    xmlHttp.send(JSON.stringify({ "type": "getCustomToken", "data": idToken }));
-                    xmlHttp.onload = function () {
-                        const response = xmlHttp.responseText;
-                        firebase.auth().signInWithCustomToken(response).catch(function (error) {
-                            console.error(error.code);
-                        });
-                        overOAuthSignout();
-                    };
-                });
+    overAdminFirebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
 
-            }
-        });
 
-        function getRedirectUrl() {
-            var urlparameter = "/index.html";
-            if (window.location.href.indexOf("redirect") > -1) {
-                urlparameter = getUrlVars()["redirect"];
-            }
-            return urlparameter;
+            user.getIdToken().then(function (idToken) {
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.open("GET", window.location.origin + "/loginPost");
+                xmlHttp.setRequestHeader("auth_token", idToken);
+                xmlHttp.send();
+                xmlHttp.onload = function () {
+                    const response = xmlHttp.responseText;
+                    firebase.auth().signInWithCustomToken(response).catch(function (error) {
+                        console.error(error.code);
+                    });
+                    overOAuthSignout();
+                };
+            });
         }
+    });
 
-        firebase.auth().onAuthStateChanged(function (user) {
-            if (user) {
-                window.location.href = getRedirectUrl();
-            } else {
-                // No user is signed in.
-                console.log("User logout");
-            }
-        });
+    function getRedirectUrl() {
+        var urlparameter = "/index";
+        if (window.location.href.indexOf("redirect") > -1) {
+            urlparameter = getUrlVars()["redirect"];
+        }
+        return urlparameter;
+    }
 
-    </script>
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            window.location.href = getRedirectUrl();
+        } else {
+            // No user is signed in.
+            console.log("User logout");
+        }
+    });
 
-</body>
-
-</html>
+</script>
+{% endblock %}

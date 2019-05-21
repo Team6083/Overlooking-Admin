@@ -91,7 +91,7 @@
 
     function toggleAuth() {
         if (firebase.auth().currentUser === null) {
-            window.location.href = "/login.html";
+            window.location.href = "/login";
         } else {
             signOut();
         }

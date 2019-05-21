@@ -4,6 +4,8 @@ import com.github.team6083.overlookingAdmin.OverAdminServer;
 import com.github.team6083.overlookingAdmin.util.router.UriRouter;
 import com.github.team6083.overlookingAdmin.web.hook.HookServer;
 import com.github.team6083.overlookingAdmin.web.pageHandler.*;
+import com.github.team6083.overlookingAdmin.web.pageHandler.auth.LoginPage;
+import com.github.team6083.overlookingAdmin.web.pageHandler.auth.LoginPost;
 import fi.iki.elonen.NanoHTTPD;
 
 import java.io.IOException;
@@ -33,13 +35,14 @@ public class WebServer extends NanoHTTPD {
     }
 
     private void init() {
-        router.add("/login", new FileHandler("/login.html"), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
+        router.add("/login", new LoginPage());
+        router.add("/loginPost", new LoginPost());
 
-        router.add("/index", new IndexPage(), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
-        router.add("/users", new UsersPage(), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
-        router.add("/apps", new AppsPage(), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
-        router.add("/fieldConfig", new FieldConfigPage(), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
-        router.add("/memberProfiles", new MemberProfilesPage(), Method.GET, UriRouter.HandlerAccessLevel.PublicAccess);
+        router.add("/index", new IndexPage());
+        router.add("/users", new UsersPage());
+        router.add("/apps", new AppsPage());
+        router.add("/fieldConfig", new FieldConfigPage());
+        router.add("/memberProfiles", new MemberProfilesPage());
 
         uriRewriteMap.put("/", "/index");
     }
